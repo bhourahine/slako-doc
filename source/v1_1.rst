@@ -1,0 +1,58 @@
+===================================
+Format of the v1.1 header extension
+===================================
+
+If the first character of the first line is ``@``, then the header and the
+integral table follows the extended v1.1 format, allowing angular momenta up to
+:math:`f`.
+
+Homo-nuclear case
+~~~~~~~~~~~~~~~~~
+
+Line 1: Comment line, starts with ``@`` as first character.
+
+Line 2: Identical with line 1 in the simple format.
+
+Line 3: ``Ef`` ``Ed`` ``Ep`` ``Es`` ``SPE`` ``Uf`` ``Ud`` ``Up`` ``Us`` ``ff``
+``fd`` ``fp`` ``fs``
+
+where ``Ef``, ``Ed``, ``Ep`` and ``Es`` are the on-site energies for the angular
+momenta :math:`f`, :math:`d`, :math:`p` and :math:`s` for the given atom. The
+field ``SPE`` is read but not interpreted by the specific DFTB+ (was spin
+polarisation error for calculating formation energies in very early DFTB
+implementations, now superceeded by full spin polarization). ``Uf``, ``Ud``,
+``Up``, ``Us`` are the Hubbard U values for the appropriate angular momenta, and
+``ff``, ``fd``, ``fp`` and ``fs`` are the occupations (for the neutral atom).
+
+Line 4: Identical with line 3 in the simple format.
+
+Lines 5 to (5 + ``nGridPoints`` - 1):
+
+::
+
+      Hff0 Hff1 Hff2 Hff3 Hdf0 Hdf1 Hdf2 Hdd0 Hdd1 Hdd2 Hpf0 Hpf1 Hpd0 Hpd1
+      Hpp0 Hpp1 Hsf0 Hsd0 Hsp0 Hss0  Sff0 Sff1 Sff2 Sff3 Sdf0 Sdf1 Sdf2 Sdd0
+      Sdd1 Sdd2  Spf0 Spf1 Spd0 Spd1 Spp0 Spp1 Ssf0 Ssd0 Ssp0 Sss0
+
+Integral table containing the Hamiltonian matrix elements and the
+overlaps for the two center interactions :math:`ff^\sigma`,
+:math:`ff^\pi`, :math:`ff^\delta` :math:`ff^\phi`, :math:`df^\sigma`,
+:math:`df^\pi`, :math:`df^\delta`, :math:`dd^\sigma`, :math:`dd^\pi`,
+:math:`dd^\delta`, :math:`pf^\sigma`, :math:`pf^\pi`, :math:`pd^\sigma`,
+:math:`pd^\pi`, :math:`pp^\sigma`, :math:`pp^\pi`, :math:`sf^\sigma`,
+:math:`sd^\sigma`, :math:`sp^\sigma`, :math:`ss^\sigma`. The first line
+of this block corresponds to the distance ``gridDist`` between the
+atoms, for every following line the distance is increased by
+``gridDist``. (The angular dependent part of the atomic orbitals in the
+integrals is assumed being described by tesseral harmonics.)
+
+Hetero-nuclear case
+~~~~~~~~~~~~~~~~~~~
+
+Line 1: Identical to line 1 in the homo-nuclear case.
+
+Lines 2 to 3: Identical to lines 1 to 2 in the simple format
+(hetero-nuclear case).
+
+Lines 4 to (4 + ``nGridPoints`` - 1): Identical to lines 5 to (5 +
+``nGridPoints`` - 1) in the homo-nuclear case.
