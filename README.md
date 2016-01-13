@@ -10,7 +10,7 @@ This repository is for a draft standard for the Slater-Koster data required by t
 * v1.1 
     * The [DFTB+](http://www.dftb-plus.info/) extended format for *f* electron data
 * v1.5
-    * The transitional standard to include extra data
+    * The transitional standard to include extra data inside the SK files that was previously user supplied to the code parsing these files.
 
 ### How do I get set up? ###
 
