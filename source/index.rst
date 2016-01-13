@@ -12,3 +12,4 @@ Welcome to SlakoDoc's documentation!
    introduction.rst
    v1.rst
    v1_1.rst
+   v1_15.rst

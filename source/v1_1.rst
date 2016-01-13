@@ -1,3 +1,5 @@
+.. _version1.1:
+
 ===================================
 Format of the v1.1 header extension
 ===================================
@@ -9,9 +11,9 @@ integral table follows the extended v1.1 format, allowing angular momenta up to
 Homo-nuclear case
 ~~~~~~~~~~~~~~~~~
 
-Line 1: Comment line, starts with ``@`` as first character.
+Line 1: Comment line, starting with ``@`` as the first character.
 
-Line 2: Identical with line 1 in the simple format.
+Line 2: Identical with line 1 in the :ref:`version1` format.
 
 Line 3: ``Ef`` ``Ed`` ``Ep`` ``Es`` ``SPE`` ``Uf`` ``Ud`` ``Up`` ``Us`` ``ff``
 ``fd`` ``fp`` ``fs``

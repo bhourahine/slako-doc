@@ -1,3 +1,5 @@
+.. _version1:
+
 ======================================
 Format of the v1.0 Slater-Koster files
 ======================================
@@ -163,10 +165,11 @@ range, on which the current spline describes the repulsive interaction as
 
 .. math:: c_0 + c_1 (r - r_0) + c_2 (r - r_0)^2 + c_3 (r - r_0)^3\text.
 
-Please note, that ``end`` is read but not interpreted the specific DFTB+
-implementation, as the end of an interval is taken to be equal to the start of
-the next interval. Nevertheless ``end`` should be specified in each line
-correctly, as other DFTB implementations may depend on it.
+Please note, that ``end`` is read but not interpreted the specific `DFTB+
+<http://www.dftb-plus.info>`__ implementation, as the end of an interval is
+taken to be equal to the start of the next interval. Nevertheless ``end`` should
+be specified in each line correctly, as other DFTB implementations may depend on
+it.
 
 Line 4 +\ ``nInt`` - 1:
 
@@ -182,7 +185,7 @@ range, on which the last spline describes the repulsive interaction as
    c_0 + c_1 (r - r_0) + c_2 (r - r_0)^2 + c_3 (r - r_0)^3 + c_4 (r -
    r_0)^4 + c_5 (r - r_0)^5 \text.
 
-Please note, that ``end`` is read but not interpreted by the specific DFTB+
-implementation, as the end of the last interval is taken to be equal to
-``cutoff``. Nevertheless ``end`` should be specified in each line correctly, as
-other DFTB implementations may depend on it.
+Please note, that ``end`` is read but not interpreted by the specific `DFTB+
+<http://www.dftb-plus.info>`__ implementation, as the end of the last interval
+is taken to be equal to ``cutoff``. Nevertheless ``end`` should be specified in
+each line correctly, as other DFTB implementations may depend on it.

@@ -1,0 +1,13 @@
+.. _version1.15:
+
+==============================
+Format of the v1.15 extensions
+==============================
+
+This is based on the :ref:`version1` format, and does not support angular
+momenta beyond ``d`` states.
+
+Homo-nuclear case
+~~~~~~~~~~~~~~~~~
+
+Line 1: First 10 fields identical with line 1 in the :ref:`version1` format.
