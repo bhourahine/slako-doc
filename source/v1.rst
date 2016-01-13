@@ -2,10 +2,6 @@
 Format of the v1.0 Slater-Koster files
 ======================================
 
-.. role:: math(raw)
-   :format: html latex
-..
-
 Introduction
 ============
 
