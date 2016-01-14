@@ -10,6 +10,6 @@ Welcome to SlakoDoc's documentation!
    :maxdepth: 1
 
    introduction.rst
-   v1.rst
-   v1_1.rst
-   v1_15.rst
+   v0_9.rst
+   v1_0.rst
+   v1_5.rst
