@@ -1,7 +1,7 @@
-.. _version1:
+.. _version0.9:
 
 ======================================
-Format of the v1.0 Slater-Koster files
+Format of the v0.9 Slater-Koster files
 ======================================
 
 Introduction
@@ -76,10 +76,13 @@ Lines 4 to (4 + ``nGridPoints`` - 1):
       Hdd0 Hdd1 Hdd2 Hpd0 Hpd1 Hpp0 Hpp1 Hsd0 Hsp0 Hss0 Sdd0 Sdd1 Sdd2 Spd0 Spd1
       Spp0 Spp1 Ssd0 Ssp0 Sss0
 
-Integral table containing the DFTB Hamiltonian and the overlap matrix elements
-for the two center interactions :math:`dd^\sigma`, :math:`dd^\pi`,
-:math:`dd^\delta`, :math:`pd^\sigma`, :math:`pd^\pi`, :math:`pp^\sigma`,
-:math:`pp^\pi`, :math:`sd^\sigma`, :math:`sp^\sigma` and :math:`ss^\sigma`
+This is the integral table containing the DFTB Hamiltonian and the overlap
+matrix elements for the two center interactions
+
+.. math::
+   dd^\sigma, dd^\pi, dd^\delta, pd^\sigma, pd^\pi, pp^\sigma, pp^\pi,
+   sd^\sigma, sp^\sigma, ss^\sigma,
+
 between the atomic orbitals. The first line of this block corresponds to the
 distance ``gridDist`` (:math:`|\mathbf{r}_0|`) between the atoms, for every
 following line the distance is increased by ``gridDist``. The Hamiltonian matrix

@@ -1,7 +1,7 @@
-.. _version1.1:
+.. _version1.0:
 
 ===================================
-Format of the v1.1 header extension
+Format of the v1.0 header extension
 ===================================
 
 If the first character of the first line is ``@``, then the header and the
@@ -13,7 +13,7 @@ Homo-nuclear case
 
 Line 1: Comment line, starting with ``@`` as the first character.
 
-Line 2: Identical with line 1 in the :ref:`version1` format.
+Line 2: Identical with line 1 in the :ref:`version0.9` format.
 
 Line 3: ``Ef`` ``Ed`` ``Ep`` ``Es`` ``SPE`` ``Uf`` ``Ud`` ``Up`` ``Us`` ``ff``
 ``fd`` ``fp`` ``fs``
