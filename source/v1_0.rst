@@ -5,7 +5,7 @@ Format of the v1.0 header extension
 ===================================
 
 If the first character of the first line is ``@``, then the header and the
-integral table follows the extended v1.1 format, allowing angular momenta up to
+integral table follows the extended v1.0 format, allowing angular momenta up to
 :math:`f`.
 
 Homo-nuclear case

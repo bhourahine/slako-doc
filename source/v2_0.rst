@@ -1,0 +1,310 @@
+.. _version2.0:
+
+=========================================
+Draft format of the v2.0 extended SK dat
+=========================================
+
+This format breaks backward compatibility with previous versions. To distingush
+from earlier formats, Slater-Koster files distributed from the `dftb.org
+<http://www.dftb.org>`__ site will use the file extension `.sk2`. This format is
+extensible (within some limits) and consists of a series of labelled blocks of
+data for diatomic pairs of chemical elements. Distinct from previous versions,
+the heteroatomic data is for a pair is packaged into a ``single`` data file for
+each pair of elements instead of an asymmetric pair of files.
+
+Generic format of a data block
+==============================
+
+Each section starts with a block label, begining with ``@`` as the first
+character at the start of the line, followed by the block name. The format of
+the block data will depend on the nature of the data tag.
+
+Comments in the file begin with ``#``, with any further characters on that line
+being ignored.
+
+List of data blocks
+===================
+
++------------------------------+-------------------------------------+
+| Keyword                      |Notes                                |
++------------------------------+-------------------------------------+
+| `@homo_nuclear`_             | Compulsary                          |
++------------------------------+-------------------------------------+
+| `@basis`_                    | Compulsary                          |
++------------------------------+-------------------------------------+
+| `@hamiltonian_integrals`_    | Compulsary                          |
++------------------------------+-------------------------------------+
+| `@overlap_integrals`_        | Compulsary                          |
++------------------------------+-------------------------------------+
+| `@repulsive_polynomial`_     | Compulsary                          |
++------------------------------+-------------------------------------+
+| `@repulsive_spline`_         | Compulsary                          |
++------------------------------+-------------------------------------+
+| `@repulsive_grid`_           | Compulsary                          |
++------------------------------+-------------------------------------+
+| `@xml_documentation`_        | Compulsary                          |
++------------------------------+-------------------------------------+
+| `@atomic_mass`_              | Compulsary if `@homo_nuclear`_ true |
++------------------------------+-------------------------------------+
+| `@onsite_energies`_          | Compulsary if `@homo_nuclear`_ true |
++------------------------------+-------------------------------------+
+| `@atomic_hubbard_us`_        | Compulsary if `@homo_nuclear`_ true |
++------------------------------+-------------------------------------+
+| `@atomic_spin_ws`_           | Optional if `@homo_nuclear`_ true   |
++------------------------------+-------------------------------------+
+| `@atomic_third_order`_       | Optional if `@homo_nuclear`_ true   |
++------------------------------+-------------------------------------+
+| `@atomic_spinorbit_xis`_     | Optional if `@homo_nuclear`_ true   |
++------------------------------+-------------------------------------+
+| `@atomic_onsite_corection`_  | Optional if `@homo_nuclear`_ true   |
++------------------------------+-------------------------------------+
+| `@atomic_trans_dipole`_      | Optional if `@homo_nuclear`_ true   |
++------------------------------+-------------------------------------+
+| `@atomic_dipole_corection`_  | Optional if `@homo_nuclear`_ true   |
++------------------------------+-------------------------------------+
+
+
+Data stored in blocks
+~~~~~~~~~~~~~~~~~~~~~
+
+.. _@homo_nuclear: 
+
+``@homo_nuclear`` 
+------------------
+
+Logical variable whether the atomic pair being described is homo- or
+hetero-nuclear. The homonuclear case requires additional data blocks to be
+present, specifiying additional atomic data.
+
+  | Line 1 : ``T`` or ``F``
+
+.. _@basis:
+
+``@basis``
+----------
+
+Atomic basis functions, specified as total number of angular shells of functions
+followed by the indivdual angular momentum of each shell and a unique label
+
+  | nshell
+  | l\ :sub:`1` label\ :sub:`1`  
+  | .
+  | .
+  | .
+  | l\ :sub:`nshell` label\ :sub:`nshell`
+
+.. _@hamiltonian_integrals:
+
+``@hamiltonian_integrals``
+--------------------------
+
+Diatomic integral table containing the DFTB Hamiltonian between the atomic
+orbitals. The first line of this block corresponds to the starting radial
+distance for the first elements and the grid separation ``gridDist`` between the
+atoms, for every following line the distance is increased by ``gridDist``.
+
+
+
+.. _@overlap_integrals:
+
+``@overlap_integrals``
+----------------------
+
+The overlap is given by
+
+.. math::
+
+   \left< \phi_\mu(\mathbf{r}) \left| \phi_\nu(\mathbf{r}-\mathbf{r}_0) \right.
+   \right>
+   \qquad \mu\in\alpha, \nu\in\beta
+
+.. _@repulsive_spline:
+
+``@repulsive_spline``
+---------------------
+
+Repulsive data specified as an exponential at short distance matched to a spline
+at longer distance. The format of the block is
+
+  | Line 1: nInt cutoff
+
+with ``nInt`` being the number of (subsequent) intervals being described by
+various cubic splines and ``cutoff`` the cutoff of the repulsive interaction.
+
+  | Line 2: a\ :sub:`1` a\ :sub:`2` a\ :sub:`3`
+
+Coefficients a\ :sub:`1`, a\ :sub:`2`, a\ :sub:`3` describe the exponential part
+of the repulsive (which is applied if the atoms are closer as the starting
+distance of the first spline). The repulsive in that region is described by the
+exponential expression
+
+.. math:: e^{-a_1 r + a_2} + a_3
+
+with :math:`r` being the distance between the atoms.
+
+  | Lines 3 to 3 + ``nInt`` - 2:
+
+
+
+    start end c\ :sub:`0` c\ :sub:`1` c\ :sub:`2` c\ :sub:`3`
+
+with ``start`` (:math:`r_0`) and ``end`` describing the bounds of the distance
+range, on which the current spline describes the repulsive interaction as
+
+.. math:: c_0 + c_1 (r - r_0) + c_2 (r - r_0)^2 + c_3 (r - r_0)^3\text.
+
+Please note, that ``end`` is read but not interpreted the specific `DFTB+
+<http://www.dftb-plus.info>`__ implementation, as the end of an interval is
+taken to be equal to the start of the next interval. Nevertheless ``end`` should
+be specified in each line correctly, as other DFTB implementations may depend on
+it.
+
+  | Line 3 +\ ``nInt`` - 1:
+
+    start end d\ :sub:`0` d\ :sub:`1` d\ :sub:`2` d\ :sub:`3` d\ :sub:`4` d\
+    :sub:`5`
+
+with ``start`` (:math:`r_0`) and ``end`` describing the bounds of the distance
+range, on which the last spline describes the repulsive interaction as
+
+.. math::
+
+   d_0 + d_1 (r - r_0) + d_2 (r - r_0)^2 + d_3 (r - r_0)^3 + d_4 (r - r_0)^4 +
+   d_5 (r - r_0)^5 \text.
+
+Please note, that ``end`` is read but not interpreted by the specific `DFTB+
+<http://www.dftb-plus.info>`__ implementation, as the end of the last interval
+is taken to be equal to ``cutoff``. Nevertheless ``end`` should be specified in
+each line correctly, as other DFTB implementations may depend on it.
+
+
+.. _@repulsive_polynomial:
+
+``@repulsive_polynomial``
+-------------------------
+
+Repulsive data specified as a 9\ :sup:`th` order polynomial function given on a
+single line
+
+c\ :sub:`2` c\ :sub:`3` c\ :sub:`4` c\ :sub:`5` c\ :sub:`6` c\ :sub:`7` c\
+:sub:`8` c\ :sub:`9` r\ :sub:`cut`
+
+Where c\ :sub:`2`, …, c\ :sub:`9` and r\ :sub:`cut` are the polynomial coefficients
+and the cutoff radius of the repulsive interaction.
+
+.. math:: 
+   \sum_{i=2}^9 c_i (r_{\text{cut}} - r)^i.
+
+c\ :sub:`0` and c\ :sub:`1` are both implicitly zero.
+
+.. _@repulsive_grid:
+
+``@repulsive_grid``
+-------------------
+
+Repulsive data specified as a set of raw (x,y) values
+
+.. _@xml_documentation: 
+
+``@xml_documentation``
+----------------------
+
+Documentation in xml format covering the creation, test systems and
+applicability and the publications the author of the file requires to be cited.
+
+
+.. _@atomic_mass:
+
+``@atomic_mass``
+----------------
+
+Default mass of the given atom in atomic mass units (!)
+
+  | Line 1: mass
+
+Value is only present for homonuclear files
+
+.. _@onsite_energies:
+
+``@onsite_energies``
+--------------------
+
+Onsite energies for the basis functions (Hartree), one value for each shell
+
+  | Line 1 : E\ :sub:`1` E\ :sub:`2` … E\ :sub:`nshell`
+
+.. _@reference_occupations:
+
+``@reference_occupations``
+--------------------------
+
+Neutral atomic reference occupations for the atom in its ground state
+
+  | Line 1 : n\ :sub:`1` n\ :sub:`2` … n\ :sub:`nshell`
+
+.. _@atomic_hubbard_us:
+
+``@atomic_hubbard_us``
+----------------------
+
+Hubbard U values for the atomic shells
+
+  | Line 1 : U\ :sub:`1` U\ :sub:`2` … U\ :sub:`nshell`
+
+.. _@atomic_spin_ws:
+
+``@atomic_spin_ws``
+-------------------
+
+Matrix of atomic spin derivatives
+
++-------------+--------------------+--------------------+---+-------------------------+
+| Line 1      | W\ :sub:`1 1`      | W\ :sub:`2 1`      | … | W\ :sub:`nshell 1`      |
+|             |                    |                    |   |                         |
++-------------+--------------------+--------------------+---+-------------------------+
+| Line 2      | W\ :sub:`1 2`      | W\ :sub:`2 2`      | … | W\ :sub:`nshell 2`      |
++-------------+--------------------+--------------------+---+-------------------------+
+| .           | .                  |                    |   | .                       |
++-------------+--------------------+--------------------+---+-------------------------+
+| .           |                    | .                  |   | .                       |
++-------------+--------------------+--------------------+---+-------------------------+
+| .           |                    |                    | . | .                       |
++-------------+--------------------+--------------------+---+-------------------------+
+| Line nshell | W\ :sub:`1 nshell` | W\ :sub:`2 nshell` | … | W\ :sub:`nshell nshell` |
+|             |                    |                    |   |                         |
++-------------+--------------------+--------------------+---+-------------------------+
+
+
+.. _@atomic_third_order:
+
+``@atomic_third_order``
+-----------------------
+
+Matrix of 3\ :sup:`rd` order diagonal derivatives 
+
+.. _@atomic_spinorbit_xis:
+
+``@atomic_spinorbit_xis``
+-------------------------
+
+Spin-orbit coupling constants
+
+  | Line 1 : U\ :sub:`1` U\ :sub:`2` … U\ :sub:`nshell`
+
+
+.. _@atomic_onsite_corection:
+
+``@atomic_onsite_corection``
+----------------------------
+
+.. _@atomic_trans_dipole:
+
+
+``@atomic_trans_dipole``
+------------------------
+
+.. _@atomic_dipole_corection:
+
+``@atomic_dipole_corection``
+----------------------------
+

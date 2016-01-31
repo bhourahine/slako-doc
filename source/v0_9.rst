@@ -58,7 +58,7 @@ superceeded by full spin polarization). ``Ud``, ``Up``, ``Us`` are the Hubbard U
 values for the appropriate angular momenta, and ``fd``, ``fp``, ``fs`` are the
 occupations (for the neutral atom) in the ground state.
 
-Line 3: mass c2 c3 c4 c5 c6 c7 c8 c9 rcut d1 d2 d3 d4 d5 d6 d7 d8 d9 d10
+Line 3: mass c2 c3 c4 c5 c6 c7 c8 c9 rcut
 
 where ``mass`` is the mass of the given atom in atomic mass units (!), ``c2``,
 …, ``c9`` and ``rcut`` are the polynomial coefficients and the cutoff radius of
