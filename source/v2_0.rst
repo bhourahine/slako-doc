@@ -84,14 +84,13 @@ present, specifiying additional atomic data.
 ----------
 
 Atomic basis functions, specified as total number of angular shells of functions
-followed by the indivdual angular momentum of each shell and a unique label
+followed by the indivdual angular momentum of each shell and a unique text label
+for each shell of functions. The label cannot contain whitespace characters.
 
-  | nshell
-  | l\ :sub:`1` label\ :sub:`1`  
-  | .
-  | .
-  | .
-  | l\ :sub:`nshell` label\ :sub:`nshell`
+  | Line 1 : nshells
+  | Line 2 : l\ :sub:`1` label\ :sub:`1`  
+  | …
+  | Line nshells : l\ :sub:`nshells` label\ :sub:`nshells`
 
 .. _@hamiltonian_integrals:
 
@@ -99,11 +98,13 @@ followed by the indivdual angular momentum of each shell and a unique label
 --------------------------
 
 Diatomic integral table containing the DFTB Hamiltonian between the atomic
-orbitals. The first line of this block corresponds to the starting radial
-distance for the first elements and the grid separation ``gridDist`` between the
-atoms, for every following line the distance is increased by ``gridDist``.
+orbitals on a regular radial grid. The first line of this block corresponds to
+the number of radial distances ``nGrid``, the starting radial distance for the
+first elements ``r0`` and the grid separation ``gridDist`` between the atoms,
+for every following line the distance is increased by ``gridDist``. Both
+distances are specified in atomic units.
 
-
+  | nGrid r0 gridDist
 
 .. _@overlap_integrals:
 
@@ -231,7 +232,7 @@ Value is only present for homonuclear files
 
 Onsite energies for the basis functions (Hartree), one value for each shell
 
-  | Line 1 : E\ :sub:`1` E\ :sub:`2` … E\ :sub:`nshell`
+  | Line 1 : E\ :sub:`1` E\ :sub:`2` … E\ :sub:`nshells`
 
 .. _@reference_occupations:
 
@@ -240,7 +241,7 @@ Onsite energies for the basis functions (Hartree), one value for each shell
 
 Neutral atomic reference occupations for the atom in its ground state
 
-  | Line 1 : n\ :sub:`1` n\ :sub:`2` … n\ :sub:`nshell`
+  | Line 1 : n\ :sub:`1` n\ :sub:`2` … n\ :sub:`nshells`
 
 .. _@atomic_hubbard_us:
 
@@ -249,7 +250,7 @@ Neutral atomic reference occupations for the atom in its ground state
 
 Hubbard U values for the atomic shells
 
-  | Line 1 : U\ :sub:`1` U\ :sub:`2` … U\ :sub:`nshell`
+  | Line 1 : U\ :sub:`1` U\ :sub:`2` … U\ :sub:`nshells`
 
 .. _@atomic_spin_ws:
 
@@ -258,21 +259,19 @@ Hubbard U values for the atomic shells
 
 Matrix of atomic spin derivatives
 
-+-------------+--------------------+--------------------+---+-------------------------+
-| Line 1      | W\ :sub:`1 1`      | W\ :sub:`2 1`      | … | W\ :sub:`nshell 1`      |
-|             |                    |                    |   |                         |
-+-------------+--------------------+--------------------+---+-------------------------+
-| Line 2      | W\ :sub:`1 2`      | W\ :sub:`2 2`      | … | W\ :sub:`nshell 2`      |
-+-------------+--------------------+--------------------+---+-------------------------+
-| .           | .                  |                    |   | .                       |
-+-------------+--------------------+--------------------+---+-------------------------+
-| .           |                    | .                  |   | .                       |
-+-------------+--------------------+--------------------+---+-------------------------+
-| .           |                    |                    | . | .                       |
-+-------------+--------------------+--------------------+---+-------------------------+
-| Line nshell | W\ :sub:`1 nshell` | W\ :sub:`2 nshell` | … | W\ :sub:`nshell nshell` |
-|             |                    |                    |   |                         |
-+-------------+--------------------+--------------------+---+-------------------------+
++--------------+---------------------+---------------------+---+---------------------------+
+| Line 1       | W\ :sub:`1 1`       | W\ :sub:`2 1`       | … | W\ :sub:`nshells 1`       |
++--------------+---------------------+---------------------+---+---------------------------+
+| Line 2       | W\ :sub:`1 2`       | W\ :sub:`2 2`       | … | W\ :sub:`nshells 2`       |
++--------------+---------------------+---------------------+---+---------------------------+
+| .            | .                   |                     |   | .                         |
++--------------+---------------------+---------------------+---+---------------------------+
+| .            |                     | .                   |   | .                         |
++--------------+---------------------+---------------------+---+---------------------------+
+| .            |                     |                     | . | .                         |
++--------------+---------------------+---------------------+---+---------------------------+
+| Line nshells | W\ :sub:`1 nshells` | W\ :sub:`2 nshells` | … | W\ :sub:`nshells nshells` |
++--------------+---------------------+---------------------+---+---------------------------+
 
 
 .. _@atomic_third_order:
@@ -289,7 +288,7 @@ Matrix of 3\ :sup:`rd` order diagonal derivatives
 
 Spin-orbit coupling constants
 
-  | Line 1 : U\ :sub:`1` U\ :sub:`2` … U\ :sub:`nshell`
+  | Line 1 : U\ :sub:`1` U\ :sub:`2` … U\ :sub:`nshells`
 
 
 .. _@atomic_onsite_corection:

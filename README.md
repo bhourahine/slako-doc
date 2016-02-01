@@ -5,7 +5,7 @@
 This repository is for a draft standard for the Slater-Koster data
 required by the [DFTB](http://www.dftb.org) method
 
-* This document covers versions 1.0 - 1.5 of the standard for the *slako* data
+* This document covers versions 1.0 - 2.0 of the standard for the *slako* data
 
 * v0.9
     * Original format for the data
@@ -15,7 +15,7 @@ required by the [DFTB](http://www.dftb.org) method
     * The [DFTB+](http://www.dftb-plus.info/) extended format for *f*
       electron data
 
-* v1.5
+* v2.0
     * The transitional standard to include extra data inside the SK
       files that was previously user supplied to the code parsing
       these files.
