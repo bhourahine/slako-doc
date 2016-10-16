@@ -4,13 +4,16 @@
 Draft format of the v2.0 extended SK dat
 =========================================
 
-This format breaks backward compatibility with previous versions. To distingush
-from earlier formats, Slater-Koster files distributed from the `dftb.org
-<http://www.dftb.org>`__ site will use the file extension `.sk2`. This format is
-extensible (within some limits) and consists of a series of labelled blocks of
-data for diatomic pairs of chemical elements. Distinct from previous versions,
-the heteroatomic data is for a pair is packaged into a ``single`` data file for
-each pair of elements instead of an asymmetric pair of files.
+This format breaks backward compatibility with previous versions. 
+
+To distingush from earlier formats, Slater-Koster files distributed from the
+`dftb.org <http://www.dftb.org>`__ site will use the file extension `.sk2`. This
+format is extensible (within some limits) and consists of a series of labelled
+blocks of data for atomic, diatomic pairs, and in principle 3 or 4 body terms,
+for the chemical elements in the Slater-Koster set. Distinct from previous
+versions, atomic data is separated into a single file for each atom, while the
+heteroatomic data is for a pair is packaged into a ``single`` data file for each
+pair of elements instead of an asymmetric pair of files.
 
 Generic format of a data block
 ==============================
