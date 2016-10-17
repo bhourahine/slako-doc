@@ -202,7 +202,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'SlakoDoc.tex', u'SlakoDoc Documentation',
-   u'Ben Hourahine', 'howto'),
+   u'Ben Hourahine, Balint Aradi', 'howto'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -232,7 +232,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'slakodoc', u'SlakoDoc Documentation',
-     [u'Ben Hourahine'], 1)
+     [u'Ben Hourahine, Balint Aradi'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -246,7 +246,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'SlakoDoc', u'SlakoDoc Documentation',
-   u'Ben Hourahine', 'SlakoDoc', 'One line description of project.',
+   u'Ben Hourahine, Balint Aradi', 'SlakoDoc', 'One line description of project.',
    'Miscellaneous'),
 ]
 

@@ -6,24 +6,26 @@ Draft format of the v2.0 extended SK dat
 
 This format breaks backward compatibility with previous versions. 
 
-To distingush from earlier formats, Slater-Koster files distributed from the
-`dftb.org <http://www.dftb.org>`__ site will use the file extension `.sk2`. This
-format is extensible (within some limits) and consists of a series of labelled
-blocks of data for atomic, diatomic pairs, and in principle 3 or 4 body terms,
-for the chemical elements in the Slater-Koster set. Distinct from previous
-versions, atomic data is separated into a single file for each atom, while the
-heteroatomic data is for a pair is packaged into a ``single`` data file for each
-pair of elements instead of an asymmetric pair of files.
+To distingush from earlier formats, Slater-Koster files distributed from the `dftb.org
+<http://www.dftb.org>`__ site will use the file extension `.sk2` for text-based files.
+
+..
+   or `.json` for JSON format tagged data.
+
+This file format is extensible (within some limits) and consists of a series of labelled blocks of
+data for atomic, diatomic pairs, and in principle 3 or 4 body terms, for the chemical elements in
+the Slater-Koster set. Distinct from previous versions, atomic (homo-nuclear) data is stored into a
+single file for each atom, while the heteroatomic data for a pair is packaged into a ``single`` data
+file for each pair of elements, instead of an asymmetric pair of files.
 
 Generic format of a data block
 ==============================
 
-Each section starts with a block label, begining with ``@`` as the first
-character at the start of the line, followed by the block name. The format of
-the block data will depend on the nature of the data tag.
+Each section starts with a block label, begining with ``@`` as the first character at the start of
+the line, followed by the block name. The format of the block data will depend on the nature of the
+data tag.
 
-Comments in the file begin with ``#``, with any further characters on that line
-being ignored.
+Comments in the file begin with ``#``, with any further characters on that line being ignored.
 
 List of data blocks
 ===================
@@ -35,25 +37,33 @@ List of data blocks
 +------------------------------+-------------------------------------+
 | `@basis`_                    | Compulsary                          |
 +------------------------------+-------------------------------------+
-| `@hamiltonian_integrals`_    | Compulsary                          |
+| `@reference_occupations`_    | Compulsary                          |
 +------------------------------+-------------------------------------+
-| `@overlap_integrals`_        | Compulsary                          |
+| `@tabulated`_                | Compulsary                          |
 +------------------------------+-------------------------------------+
-| `@repulsive_polynomial`_     | Compulsary                          |
+| `@hamiltonian_integrals`_    | Compulsary if `@tabulated`_ true    |
 +------------------------------+-------------------------------------+
-| `@repulsive_spline`_         | Compulsary                          |
+| `@overlap_integrals`_        | Compulsary if `@tabulated`_ true    |
 +------------------------------+-------------------------------------+
-| `@repulsive_grid`_           | Compulsary                          |
+| `@repulsive_polynomial`_     | Compulsary if `@tabulated`_ true    |
++------------------------------+-------------------------------------+
+| `@repulsive_spline`_         | Compulsary if `@tabulated`_ true    |
++------------------------------+-------------------------------------+
+| `@repulsive_grid`_           | Compulsary if `@tabulated`_ true    |
 +------------------------------+-------------------------------------+
 | `@xml_documentation`_        | Compulsary                          |
 +------------------------------+-------------------------------------+
 | `@atomic_mass`_              | Compulsary if `@homo_nuclear`_ true |
 +------------------------------+-------------------------------------+
+| `@atomic_number`_            | Compulsary if `@homo_nuclear`_ true |
++------------------------------+-------------------------------------+
 | `@onsite_energies`_          | Compulsary if `@homo_nuclear`_ true |
++------------------------------+-------------------------------------+
+| `@basis_fns`_                | Compulsary if `@homo_nuclear`_ true |
 +------------------------------+-------------------------------------+
 | `@atomic_hubbard_us`_        | Compulsary if `@homo_nuclear`_ true |
 +------------------------------+-------------------------------------+
-| `@atomic_spin_ws`_           | Optional if `@homo_nuclear`_ true   |
+| `@atomic_spin_ws`_           | Compulsary if `@homo_nuclear`_ true |
 +------------------------------+-------------------------------------+
 | `@atomic_third_order`_       | Optional if `@homo_nuclear`_ true   |
 +------------------------------+-------------------------------------+
@@ -81,6 +91,16 @@ present, specifiying additional atomic data.
 
   | Line 1 : ``T`` or ``F``
 
+.. _@tabulated: 
+
+``@tabulated`` 
+------------------
+
+Logical variable whether the S-K information is tabulated on a grid, or should be dynamically
+evaluated
+
+  | Line 1 : ``T`` or ``F``
+
 .. _@basis:
 
 ``@basis``
@@ -100,12 +120,18 @@ for each shell of functions. The label cannot contain whitespace characters.
 ``@hamiltonian_integrals``
 --------------------------
 
-Diatomic integral table containing the DFTB Hamiltonian between the atomic
-orbitals on a regular radial grid. The first line of this block corresponds to
-the number of radial distances ``nGrid``, the starting radial distance for the
-first elements ``r0`` and the grid separation ``gridDist`` between the atoms,
-for every following line the distance is increased by ``gridDist``. Both
-distances are specified in atomic units.
+Diatomic integral table containing the DFTB Hamiltonian between the atomic orbitals on a regular
+radial grid. The first line of this block corresponds to the number of radial distances ``nGrid``,
+the starting radial distance for the first elements ``r0`` and the grid separation ``gridDist``
+between the atoms, for every following line the distance is increased by ``gridDist``. Both
+distances are specified in atomic units. It is strongly suggested that ``r0`` should be chosen to be
+0, i.e. the table should be available down to the nuclear position.
+
+The data is column ordered as :math:`l_1 l_2 m`, where the right most index is the fastest to
+iterate and :math:`0 \geq m \leq min(l_1,l_2)`. The shells are , :math:`l_1` and :math:`l_2`
+correspond to the 
+
+In the case of heteronuclear files, the 
 
   | nGrid r0 gridDist
 
@@ -114,7 +140,8 @@ distances are specified in atomic units.
 ``@overlap_integrals``
 ----------------------
 
-The overlap is given by
+The overlap integrals should correspond to the angular ordering and grid used to store the
+hamiltonian elements. The overlap between functions is given by
 
 .. math::
 
@@ -222,11 +249,23 @@ applicability and the publications the author of the file requires to be cited.
 ``@atomic_mass``
 ----------------
 
+..
+   Why include this if the atomic number is present?
+
 Default mass of the given atom in atomic mass units (!)
 
   | Line 1: mass
 
-Value is only present for homonuclear files
+Value is only present for homonuclear files, and is the average isotopic mass of the element.
+
+``@atomic_number``
+----------------
+
+Atomic number of the atom
+
+  | Line 1: Z
+
+Value is only present for homonuclear files.
 
 .. _@onsite_energies:
 
@@ -245,6 +284,16 @@ Onsite energies for the basis functions (Hartree), one value for each shell
 Neutral atomic reference occupations for the atom in its ground state
 
   | Line 1 : n\ :sub:`1` n\ :sub:`2` … n\ :sub:`nshells`
+
+.. _@basis_fns:
+
+
+``@basis_fns``
+--------------
+
+Basis states for the atom, currently listed for Slater-type orbitals (STOs)
+
+
 
 .. _@atomic_hubbard_us:
 
@@ -291,7 +340,7 @@ Matrix of 3\ :sup:`rd` order diagonal derivatives
 
 Spin-orbit coupling constants
 
-  | Line 1 : U\ :sub:`1` U\ :sub:`2` … U\ :sub:`nshells`
+  | Line 1 : :math:`{\xi}`\ :sub:`1` :math:`{\xi}`\ :sub:`2` … :math:`{\xi}`\ :sub:`nshells`
 
 
 .. _@atomic_onsite_corection:
