@@ -1,34 +1,220 @@
 .. _version2.0:
 
 =========================================
-Draft format of the v2.0 extended SK dat
+Draft format of the v2.0 extended SK data
 =========================================
 
-This format breaks backward compatibility with previous versions. 
+This format breaks backward compatibility with previous versions and uses
+machine-readible structured data (MSD) to organise the data.
 
-To distingush from earlier formats, Slater-Koster files distributed from the `dftb.org
-<http://www.dftb.org>`__ site will use the file extension `.sk2` for text-based files.
 
-..
-   or `.json` for JSON format tagged data.
+The MSD format
+==============
 
-This file format is extensible (within some limits) and consists of a series of labelled blocks of
-data for atomic, diatomic pairs, and in principle 3 or 4 body terms, for the chemical elements in
-the Slater-Koster set. Distinct from previous versions, atomic (homo-nuclear) data is stored into a
-single file for each atom, while the heteroatomic data for a pair is packaged into a ``single`` data
-file for each pair of elements, instead of an asymmetric pair of files.
+This file format is extensible (within some limits) and consists of a series of
+tagged environments (which can be nested) together with labelled blocks of
+data. The data blocks can occur outside of an environment, and have fields that
+describe the type, number and layout of their associated data.
 
-Generic format of a data block
-==============================
+The format is currently encoded in ASCII, but both binary and unicode (UTF-8)
+[#]_ are planned. Line endings compliant with either windows or unix are
+accepted.
 
-Each section starts with a block label, begining with ``@`` as the first character at the start of
-the line, followed by the block name. The format of the block data will depend on the nature of the
-data tag.
+`qn. should there be a version tag for MSD (for example if extended precision
+tags get added later?`
 
-Comments in the file begin with ``#``, with any further characters on that line being ignored.
+.. [#] Fortran 03 supports ENCODING when opening files.
+
+Environments
+------------
+
+The general structure of an environment is a paired starting and ending tag,
+deliminated with a pair of labelled brace brackets::
+
+ {environment
+ 
+ {subenvironment
+ 
+ }subenvironment
+ 
+ }environment
+
+Environments can be repeated, and an unterminated environment is considered to
+continue until the end of the file (all subsequent environments and tags being
+within that environment).
+
+Environment names should be lower case and can contain numerical values and
+underscore characters ([a-z0-9_]).
+
+`qn. is there a maximum length for environment names?`
+
+
+Generic format of an MSD data block
+-----------------------------------
+
+Each section starts with a block label, begining with ``@`` as the first
+character at the start of the line, followed by the block's name which must be
+lower case and can contain the underscore character ([a-z_]). The format of the
+block data will depend on the nature of the data tag.
+
+The data type and number of entries in the section are then specified, along
+with (if required) the dimensioning of the data. The precision models of the
+data maps onto corresponding FORTRAN variables.
+
+`qn. what about case, all lower? Also the symbols l and 1 look nearly identical
+in a lot of fonts.`
+
+`qn. is there a maximum length for block names?`
+
++------+-----------------+
+| Data | Type            |
++------+-----------------+
+| l    | Logical         |
++------+-----------------+
+| i4   | Integer         |
++------+-----------------+
+| i8   | Long integer    |
++------+-----------------+
+| r4   | Real            |
++------+-----------------+
+| r8   | Double precision|
++------+-----------------+
+| c4   | Complex         |
++------+-----------------+
+| c8   | Double complex  |
++------+-----------------+
+| sNNN | String of length|
+|      | NNN characters  |
++------+-----------------+
+
+The generic format for a scalar or vector valued tags is ::
+
+  @label:type:nrentryelements
+
+where label is the block label, type the data identifier and nrEntryElements the
+number of data elements. Each element in the data is white space delimited. 
+
+The format also supports array ordered data with the addition of (optional)
+comma delimited dimensioning ::
+  
+  @data:i4,3,2
+  1 2
+  3 4
+  5 6
+
+where the dimension of each row is given, for example the above corresponds to a
+FORTRAN array shape of (2,3).
+
+`qn. what about multidimensional data, extra commas?`
+
+Specific data types
+-------------------
+
+Logical
+~~~~~~~
+
+Logical values represented as a single upper case character
+
++-+-----+
+|T|true |
++-+-----+
+|F|false|
++-+-----+
+
+For example ::
+
+  @sky_blue:l:1
+  T
+  @up_is_down:l:2
+  F
+  T
+  @table_of_logicals:l:2,3
+  T F F
+  F T T
+
+Integer
+~~~~~~~
+
+32 bit integer, for example ::
+
+  @values:i4:3
+  1 2 3
+
+Long integer
+~~~~~~~~~~~~
+
+64 bit integer, for example ::
+
+  @longvalues:i8
+  2147483647
+
+Real
+~~~~
+
+Single precision real (floating point numbers), corresponding to fortran 32 bit
+real. The number of significant digits for Single Precision Literals is 7, any
+digits beyond this will be truncated. Both standard and exponential notation is
+supported ::
+
+  @real:r4:1,2
+  10.0 1.0e1
+
+
+Double precision
+~~~~~~~~~~~~~~~~
+
+Corresponding to fortran 64 bit real. Both standard and exponential notation is
+supported, but the The number of significant digits for Double Precision
+Literals is 15, any digits beyond this will be truncated. ::
+
+  @real:r8:1,2
+  10.0 1.0e1
+
+Complex
+~~~~~~~
+
+Single precision complex values. Both real and imaginary parts are specified
+with delimiting white space ::
+  
+  @complex_value:c4:2
+  1.0 -1.0
+  0.0  1.0
+
+Corresponding to the values :math:`1.0 - 1.0 i` and :math:`1.0 i`.
+  
+`qn. what about new line characters between real an imaginary parts?`
+
+Double complex
+~~~~~~~~~~~~~~
+
+Corresponding to fortran 64 bit complex values. Both real and imaginary parts
+are specified with delimiting white space ::
+  
+  @complex_value:c4:2
+  1.0e0 -1.0e0
+  0.0  1.0
+
+String
+~~~~~~
+
+Ascii character string of specified maximum length. The string starts after the
+new line character of the block specifier. `The the string can be prematurely
+terminated by a new line character. (?)` ::
+
+  @s11:1
+  10charaters
+
+The Slater-Koster environments and blocks
+=========================================
+
+
+Distinct from previous versions, atomic (homo-nuclear) data is stored into a
+single file for each atom, while the heteroatomic data for a pair is packaged
+into a ``single`` data file for each pair of elements, instead of an asymmetric
+pair of files.
 
 List of data blocks
-===================
+-------------------
 
 +------------------------------+-------------------------------------+
 | Keyword                      |Notes                                |
@@ -78,12 +264,12 @@ List of data blocks
 
 
 Data stored in blocks
-~~~~~~~~~~~~~~~~~~~~~
+---------------------
 
 .. _@homo_nuclear: 
 
-``@homo_nuclear`` 
-------------------
+``@homo_nuclear``
+~~~~~~~~~~~~~~~~~
 
 Logical variable whether the atomic pair being described is homo- or
 hetero-nuclear. The homonuclear case requires additional data blocks to be
@@ -93,8 +279,8 @@ present, specifiying additional atomic data.
 
 .. _@tabulated: 
 
-``@tabulated`` 
-------------------
+``@tabulated``
+~~~~~~~~~~~~~~
 
 Logical variable whether the S-K information is tabulated on a grid, or should be dynamically
 evaluated
@@ -104,7 +290,7 @@ evaluated
 .. _@basis:
 
 ``@basis``
-----------
+~~~~~~~~~~
 
 Atomic basis functions, specified as total number of angular shells of functions
 followed by the indivdual angular momentum of each shell and a unique text label
@@ -118,7 +304,7 @@ for each shell of functions. The label cannot contain whitespace characters.
 .. _@hamiltonian_integrals:
 
 ``@hamiltonian_integrals``
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Diatomic integral table containing the DFTB Hamiltonian between the atomic orbitals on a regular
 radial grid. The first line of this block corresponds to the number of radial distances ``nGrid``,
@@ -138,7 +324,7 @@ In the case of heteronuclear files, the
 .. _@overlap_integrals:
 
 ``@overlap_integrals``
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 The overlap integrals should correspond to the angular ordering and grid used to store the
 hamiltonian elements. The overlap between functions is given by
@@ -152,7 +338,7 @@ hamiltonian elements. The overlap between functions is given by
 .. _@repulsive_spline:
 
 ``@repulsive_spline``
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 Repulsive data specified as an exponential at short distance matched to a spline
 at longer distance. The format of the block is
@@ -212,7 +398,7 @@ each line correctly, as other DFTB implementations may depend on it.
 .. _@repulsive_polynomial:
 
 ``@repulsive_polynomial``
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Repulsive data specified as a 9\ :sup:`th` order polynomial function given on a
 single line
@@ -231,14 +417,14 @@ c\ :sub:`0` and c\ :sub:`1` are both implicitly zero.
 .. _@repulsive_grid:
 
 ``@repulsive_grid``
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 Repulsive data specified as a set of raw (x,y) values
 
 .. _@xml_documentation: 
 
 ``@xml_documentation``
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 Documentation in xml format covering the creation, test systems and
 applicability and the publications the author of the file requires to be cited.
@@ -247,7 +433,7 @@ applicability and the publications the author of the file requires to be cited.
 .. _@atomic_mass:
 
 ``@atomic_mass``
-----------------
+~~~~~~~~~~~~~~~~
 
 ..
    Why include this if the atomic number is present?
@@ -259,7 +445,7 @@ Default mass of the given atom in atomic mass units (!)
 Value is only present for homonuclear files, and is the average isotopic mass of the element.
 
 ``@atomic_number``
-----------------
+~~~~~~~~~~~~~~~~
 
 Atomic number of the atom
 
@@ -270,7 +456,7 @@ Value is only present for homonuclear files.
 .. _@onsite_energies:
 
 ``@onsite_energies``
---------------------
+~~~~~~~~~~~~~~~~~~~~
 
 Onsite energies for the basis functions (Hartree), one value for each shell
 
@@ -279,7 +465,7 @@ Onsite energies for the basis functions (Hartree), one value for each shell
 .. _@reference_occupations:
 
 ``@reference_occupations``
---------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Neutral atomic reference occupations for the atom in its ground state
 
@@ -289,7 +475,7 @@ Neutral atomic reference occupations for the atom in its ground state
 
 
 ``@basis_fns``
---------------
+~~~~~~~~~~~~~~
 
 Basis states for the atom, currently listed for Slater-type orbitals (STOs)
 
@@ -298,7 +484,7 @@ Basis states for the atom, currently listed for Slater-type orbitals (STOs)
 .. _@atomic_hubbard_us:
 
 ``@atomic_hubbard_us``
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~
 
 Hubbard U values for the atomic shells
 
@@ -307,7 +493,7 @@ Hubbard U values for the atomic shells
 .. _@atomic_spin_ws:
 
 ``@atomic_spin_ws``
--------------------
+~~~~~~~~~~~~~~~~~~~
 
 Matrix of atomic spin derivatives
 
@@ -329,14 +515,14 @@ Matrix of atomic spin derivatives
 .. _@atomic_third_order:
 
 ``@atomic_third_order``
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Matrix of 3\ :sup:`rd` order diagonal derivatives 
 
 .. _@atomic_spinorbit_xis:
 
 ``@atomic_spinorbit_xis``
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Spin-orbit coupling constants
 
@@ -346,16 +532,15 @@ Spin-orbit coupling constants
 .. _@atomic_onsite_corection:
 
 ``@atomic_onsite_corection``
-----------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _@atomic_trans_dipole:
 
 
 ``@atomic_trans_dipole``
-------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _@atomic_dipole_corection:
 
 ``@atomic_dipole_corection``
-----------------------------
-
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~

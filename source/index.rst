@@ -7,7 +7,7 @@ Welcome to SlakoDoc's documentation!
 ====================================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    introduction.rst
    v0_9.rst
