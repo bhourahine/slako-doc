@@ -4,32 +4,30 @@
 Draft format of the v2.0 extended SK data
 =========================================
 
-This format breaks backward compatibility with previous versions and uses
-machine-readible structured data (MSD) to organise the data.
+This format breaks backward compatibility with previous versions and uses a machine-readible
+structured data (MSD) format to organise the data.
 
 
-The MSD format
-==============
+The MSD 1.0 format
+==================
 
-This file format is extensible (within some limits) and consists of a series of
-tagged environments (which can be nested) together with labelled blocks of
-data. The data blocks can occur outside of an environment, and have fields that
-describe the type, number and layout of their associated data.
+This file format is extensible (within some limits) and consists of a series of tagged environments
+(which can be nested) together with labelled blocks of data. The data blocks can occur outside of an
+environment, and have fields that describe the type, number and layout of their associated data.
 
-The format is currently encoded in ASCII, but both binary and unicode (UTF-8)
-[#]_ are planned. Line endings compliant with either windows or unix are
-accepted.
+The format is currently encoded in ASCII (but binary encoding is planned for a later version).
+Environments and tag names are limited to a maximum of 100 characters and must be lower case but can
+contain numerical values and the underscore symbol (characters [a-z0-9_]). The line length is
+limited to a maximum of 1024 characters, and only unix compliant line endings are accepted.
 
 `qn. should there be a version tag for MSD (for example if extended precision
 tags get added later?`
 
-.. [#] Fortran 03 supports ENCODING when opening files.
-
 Environments
 ------------
 
-The general structure of an environment is a paired starting and ending tag,
-deliminated with a pair of labelled brace brackets::
+The general structure of an environment is a paired starting and ending tag, deliminated with a pair
+of labelled brace brackets::
 
  {environment
  
@@ -39,49 +37,40 @@ deliminated with a pair of labelled brace brackets::
  
  }environment
 
-Environments can be repeated, and an unterminated environment is considered to
-continue until the end of the file (all subsequent environments and tags being
-within that environment).
+Environments can be repeated, and an unterminated environment is considered to continue until the
+end of the file (all subsequent environments and tags being within that environment).
 
 Environment names should be lower case and can contain numerical values and
 underscore characters ([a-z0-9_]).
 
-`qn. is there a maximum length for environment names?`
-
-
 Generic format of an MSD data block
 -----------------------------------
 
-Each section starts with a block label, begining with ``@`` as the first
-character at the start of the line, followed by the block's name which must be
-lower case and can contain the underscore character ([a-z_]). The format of the
-block data will depend on the nature of the data tag.
+Each section starts with a block label, begining with ``@`` as the first character at the start of
+the line, followed by the block's name which must be lower case and can contain numerical values and
+the underscore character ([a-z0-9_]). The format of the block data will depend on the nature of the
+data tag.
 
-The data type and number of entries in the section are then specified, along
-with (if required) the dimensioning of the data. The precision models of the
-data maps onto corresponding FORTRAN variables.
-
-`qn. what about case, all lower? Also the symbols l and 1 look nearly identical
-in a lot of fonts.`
-
-`qn. is there a maximum length for block names?`
+The data type and number of entries in the section are then specified, along with (if required) the
+dimensioning of the data. The precision models of the data maps on to corresponding FORTRAN
+variables (as defined in the Fortran 2008 standard).
 
 +------+-----------------+
 | Data | Type            |
 +------+-----------------+
 | l    | Logical         |
 +------+-----------------+
-| i4   | Integer         |
+| i4   | int32           |
 +------+-----------------+
-| i8   | Long integer    |
+| i8   | int64           |
 +------+-----------------+
-| r4   | Real            |
+| r4   | real32          |
 +------+-----------------+
-| r8   | Double precision|
+| r8   | real64          |
 +------+-----------------+
-| c4   | Complex         |
+| c4   | Complex real32  |
 +------+-----------------+
-| c8   | Double complex  |
+| c8   | Complex real64  |
 +------+-----------------+
 | sNNN | String of length|
 |      | NNN characters  |
@@ -89,21 +78,21 @@ in a lot of fonts.`
 
 The generic format for a scalar or vector valued tags is ::
 
-  @label:type:nrentryelements
+  @label:type:shape
 
-where label is the block label, type the data identifier and nrEntryElements the
-number of data elements. Each element in the data is white space delimited. 
+where label is the block label, type is the data identifier and shape specifies the number of data
+elements. Any indices within shape are separated by comma characters. For, corresponding to a
+FORTRAN array shape of (2,3) of integers::
 
-The format also supports array ordered data with the addition of (optional)
-comma delimited dimensioning ::
-  
-  @data:i4,3,2
+  @data:i4:3,2
   1 2
   3 4
   5 6
 
-where the dimension of each row is given, for example the above corresponds to a
-FORTRAN array shape of (2,3).
+If the block contain only a single scalar value, :shape is not specified.
+
+Each element in the associated data is white space delimited (valid delimiters are one or more
+spaces or unix new line characters).
 
 `qn. what about multidimensional data, extra commas?`
 
@@ -140,6 +129,8 @@ Integer
   @values:i4:3
   1 2 3
 
+`qn. what about field length for integers? White space padded, leading 0 values, ...?`
+  
 Long integer
 ~~~~~~~~~~~~
 
@@ -151,47 +142,44 @@ Long integer
 Real
 ~~~~
 
-Single precision real (floating point numbers), corresponding to fortran 32 bit
-real. The number of significant digits for Single Precision Literals is 7, any
-digits beyond this will be truncated. Both standard and exponential notation is
-supported ::
+Single precision real (floating point numbers), corresponding to fortran real32. The number of
+significant digits for Single Precision Literals is 7, with 3 digit mantissa::
 
   @real:r4:1,2
-  10.0 1.0e1
+  1.0000000e0 1.0000000e1
 
 
 Double precision
 ~~~~~~~~~~~~~~~~
 
-Corresponding to fortran 64 bit real. Both standard and exponential notation is
-supported, but the The number of significant digits for Double Precision
-Literals is 15, any digits beyond this will be truncated. ::
+Corresponding to fortran real64. The number of significant digits for Double Precision Literals is
+15, any digits beyond this will be truncated.::
 
   @real:r8:1,2
-  10.0 1.0e1
+  1.000000000000000e0 1.000000000000000e1
 
 Complex
 ~~~~~~~
 
-Single precision complex values. Both real and imaginary parts are specified
-with delimiting white space ::
+Single precision complex values (corresponding to a pair of real32 values). Both real and imaginary
+parts are specified with delimiting white space(s)::
   
   @complex_value:c4:2
-  1.0 -1.0
-  0.0  1.0
+  1.0000000e0 -1.0000000e0
+  0.0000000e0  1.0000000e0
 
 Corresponding to the values :math:`1.0 - 1.0 i` and :math:`1.0 i`.
   
-`qn. what about new line characters between real an imaginary parts?`
+`qn. what about new line characters between real and imaginary parts?`
 
 Double complex
 ~~~~~~~~~~~~~~
 
-Corresponding to fortran 64 bit complex values. Both real and imaginary parts
-are specified with delimiting white space ::
+Corresponding a pair of fortran real64 values. Both real and imaginary parts are specified with
+delimiting white space::
   
   @complex_value:c4:2
-  1.0e0 -1.0e0
+  1.00000000000000e0 -1.0e0
   0.0  1.0
 
 String
