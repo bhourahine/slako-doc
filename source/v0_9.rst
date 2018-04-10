@@ -24,9 +24,9 @@ Format of the data block
 The data block contains the data necessary to calculate the two center
 interactions. It has basically two parts:
 
-- Header data (including an optional polynomial repulsive interaction) followed
-  by integral tables describing the Hamiltonian and overlap matrix elements on
-  an equidistant grid.
+- Header data (including a polynomial repulsive interaction which can optionally
+  be set to be 0, but should be present) followed by integral tables describing
+  the Hamiltonian and overlap matrix elements on an equidistant grid.
 
 - Spline representation of the repulsive interaction (optional).
 
@@ -51,20 +51,22 @@ and ``nGridPoints`` being the number of points in the table.
 Line 2: Ed Ep Es SPE Ud Up Us fd fp fs
 
 ``Ed``, ``Ep`` and ``Es`` are the on-site energies for the angular momenta
-:math:`d`, :math:`p` and :math:`s` for the given atom. The field ``SPE`` is read
-but not interpreted in the current DFTB model (was spin polarisation error for
-calculating formation energies in very early DFTB implementations, now
-superceeded by full spin polarization). ``Ud``, ``Up``, ``Us`` are the Hubbard U
-values for the appropriate angular momenta, and ``fd``, ``fp``, ``fs`` are the
-occupations (for the neutral atom) in the ground state.
+:math:`d`, :math:`p` and :math:`s` for the given atom. The field ``SPE`` is a
+spin polarisation error for calculating formation energies (see `format variants
+<variantsSPE_>`__) now largely superceeded by full spin polarization). ``Ud``,
+``Up``, ``Us`` are the Hubbard U values for the appropriate angular momenta, and
+``fd``, ``fp``, ``fs`` are the occupations (for the neutral atom) in the ground
+state.
 
-Line 3: mass c2 c3 c4 c5 c6 c7 c8 c9 rcut
+Line 3: mass c2 c3 c4 c5 c6 c7 c8 c9 rcut 10*0.0
 
-where ``mass`` is the mass of the given atom in atomic mass units (!), ``c2``,
-…, ``c9`` and ``rcut`` are the polynomial coefficients and the cutoff radius of
-the repulsive interaction (can be zero, if the repulsive is described by
+where ``mass`` is the mass of the given atom in atomic mass units(!), ``c2``, …,
+``c9`` and ``rcut`` are the polynomial coefficients and the cutoff radius of the
+repulsive interaction (these can be zero, if the repulsive is described by
 splines). The other numbers are only placeholders and can have arbitrary
-values. The polynomial repulsive is calculated as
+values. The final 10 values are not referenced (possible future extension)
+
+The polynomial repulsive is calculated as
 
 .. math:: 
    \sum_{i=2}^9 c_i (r_{\text{cut}} - r)^i.
@@ -76,8 +78,8 @@ Lines 4 to (4 + ``nGridPoints`` - 1):
       Hdd0 Hdd1 Hdd2 Hpd0 Hpd1 Hpp0 Hpp1 Hsd0 Hsp0 Hss0 Sdd0 Sdd1 Sdd2 Spd0 Spd1
       Spp0 Spp1 Ssd0 Ssp0 Sss0
 
-This is the integral table containing the DFTB Hamiltonian and the overlap
-matrix elements for the two center interactions
+This is the integral table containing the non-SCC `DFTB1` Hamiltonian and the
+overlap matrix elements for the two center interactions
 
 .. math::
    dd^\sigma, dd^\pi, dd^\delta, pd^\sigma, pd^\pi, pp^\sigma, pp^\pi,
@@ -85,8 +87,12 @@ matrix elements for the two center interactions
 
 between the atomic orbitals. The first line of this block corresponds to the
 distance ``gridDist`` (:math:`|\mathbf{r}_0|`) between the atoms, for every
-following line the distance is increased by ``gridDist``. The Hamiltonian matrix
-element is
+following line the distance is increased by ``gridDist``.
+
+See section `format variants <variantsSK0_>`__ for variations on the treatment
+of the location of the starting location of the grid values in the table.
+
+The Hamiltonian matrix element for potential superposition is
 
 .. math::
 
@@ -95,6 +101,7 @@ element is
    \mathbf r_0)] \right| \phi_\nu(\mathbf r - \mathbf r_0) \right> \qquad
    \mu\in\alpha, \nu\in\beta
 
+or for density superposition
 .. math::
 
    \left< \phi_\mu(\mathbf r) \left| - \frac{1}{2} \nabla^2 +
@@ -168,11 +175,8 @@ range, on which the current spline describes the repulsive interaction as
 
 .. math:: c_0 + c_1 (r - r_0) + c_2 (r - r_0)^2 + c_3 (r - r_0)^3\text.
 
-Please note, that ``end`` is read but not interpreted the specific `DFTB+
-<http://www.dftb-plus.info>`__ implementation, as the end of an interval is
-taken to be equal to the start of the next interval. Nevertheless ``end`` should
-be specified in each line correctly, as other DFTB implementations may depend on
-it.
+See section `format variants <variantsSpline_>`__ for variations on the spline
+specification.
 
 Line 4 +\ ``nInt`` - 1:
 
@@ -188,7 +192,4 @@ range, on which the last spline describes the repulsive interaction as
    c_0 + c_1 (r - r_0) + c_2 (r - r_0)^2 + c_3 (r - r_0)^3 + c_4 (r -
    r_0)^4 + c_5 (r - r_0)^5 \text.
 
-Please note, that ``end`` is read but not interpreted by the specific `DFTB+
-<http://www.dftb-plus.info>`__ implementation, as the end of the last interval
-is taken to be equal to ``cutoff``. Nevertheless ``end`` should be specified in
-each line correctly, as other DFTB implementations may depend on it.
+``end`` should correspond to the start of the next interval.

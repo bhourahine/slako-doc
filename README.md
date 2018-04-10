@@ -12,8 +12,7 @@ required by the [DFTB](http://www.dftb.org) method
 
 * v1.0
 
-    * The [DFTB+](http://www.dftb-plus.info/) extended format for *f*
-      electron data
+    * The extended format for *f* electron data
 
 * v2.0
     * The transitional standard to include extra data inside the SK
