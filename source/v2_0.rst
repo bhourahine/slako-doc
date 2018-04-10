@@ -1,8 +1,8 @@
 .. _version2.0:
 
-=========================================
-Draft format of the v2.0 extended SK data
-=========================================
+================================================
+Draft format of a possible v2.0 extended SK data
+================================================
 
 This format breaks backward compatibility with previous versions and uses a machine-readible
 structured data (MSD) format to organise the data.
