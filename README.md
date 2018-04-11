@@ -15,7 +15,7 @@ required by the [DFTB](http://www.dftb.org) method
     * The extended format for *f* electron data
 
 * v2.0
-    * The transitional standard to include extra data inside the SK
+    * The proposed transitional standard to include extra data inside the SK
       files that was previously user supplied to the code parsing
       these files.
 
