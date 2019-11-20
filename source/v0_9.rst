@@ -45,18 +45,16 @@ Homo-nuclear case
 
 Line 1: gridDist nGridPoints
 
-``gridDist`` being the distance between the grid points of the integral table,
-and ``nGridPoints`` being the number of points in the table.
+``gridDist`` being the distance in atomic units between the grid points of the
+integral table, and ``nGridPoints`` being the number of points in the table.
 
-Line 2: Ed Ep Es SPE Ud Up Us fd fp fs
-
-``Ed``, ``Ep`` and ``Es`` are the on-site energies for the angular momenta
-:math:`d`, :math:`p` and :math:`s` for the given atom. The field ``SPE`` is a
-spin polarisation error for calculating formation energies (see `format variants
-<variantsSPE_>`__) now largely superceeded by full spin polarization). ``Ud``,
-``Up``, ``Us`` are the Hubbard U values for the appropriate angular momenta, and
-``fd``, ``fp``, ``fs`` are the occupations (for the neutral atom) in the ground
-state.
+Line 2: Ed Ep Es SPE Ud Up Us fd fp fs ``Ed``, ``Ep`` and ``Es`` are the on-site
+energies for the angular momenta :math:`d`, :math:`p` and :math:`s` for the
+given atom. The field ``SPE`` is a spin polarisation error for calculating
+formation energies (see :ref:`variants`) now largely superceeded by full
+spin polarization). ``Ud``, ``Up``, ``Us`` are the Hubbard U values for the
+appropriate angular momenta, and ``fd``, ``fp``, ``fs`` are the occupations (for
+the neutral atom) in the ground state.
 
 Line 3: mass c2 c3 c4 c5 c6 c7 c8 c9 rcut 10*0.0
 
@@ -89,8 +87,8 @@ between the atomic orbitals. The first line of this block corresponds to the
 distance ``gridDist`` (:math:`|\mathbf{r}_0|`) between the atoms, for every
 following line the distance is increased by ``gridDist``.
 
-See section `format variants <variantsSK0_>`__ for variations on the treatment
-of the location of the starting location of the grid values in the table.
+See section :ref:`variants` for variations on the treatment of the location of
+the starting location of the grid values in the table.
 
 The Hamiltonian matrix element for potential superposition is
 
@@ -147,7 +145,8 @@ instead of the splines. The spline block (if present) contains following lines:
 Line 1: Spline
 
 Simple line with the string ’\ ``Spline``\ ’ indicating the start of the block
-with the spline repulsive.
+with the spline repulsive. The distances are specified in atomic units (Bohr)
+and energies in Hartree (a.u.).
 
 Line 2: nInt cutoff
 
@@ -175,8 +174,7 @@ range, on which the current spline describes the repulsive interaction as
 
 .. math:: c_0 + c_1 (r - r_0) + c_2 (r - r_0)^2 + c_3 (r - r_0)^3\text.
 
-See section `format variants <variantsSpline_>`__ for variations on the spline
-specification.
+See section :ref:`variantsSpline` for variations on the spline specification.
 
 Line 4 +\ ``nInt`` - 1:
 

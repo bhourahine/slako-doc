@@ -4,6 +4,9 @@
 Draft format of a possible v2.0 extended SK data
 ================================================
 
+**Note, this format has not been implemented for any code and is a work in
+progress.**
+
 This format breaks backward compatibility with previous versions and uses a machine-readible
 structured data (MSD) format to organise the data.
 
@@ -17,7 +20,7 @@ environment, and have fields that describe the type, number and layout of their 
 
 The format is currently encoded in ASCII (but binary encoding is planned for a later version).
 Environments and tag names are limited to a maximum of 100 characters and must be lower case but can
-contain numerical values and the underscore symbol (characters [a-z0-9_]). The line length is
+contain numerical values and the underscore symbol (characters a-z0-9``_``). The line length is
 limited to a maximum of 1024 characters, and only unix compliant line endings are accepted.
 
 `qn. should there be a version tag for MSD (for example if extended precision
@@ -41,14 +44,14 @@ Environments can be repeated, and an unterminated environment is considered to c
 end of the file (all subsequent environments and tags being within that environment).
 
 Environment names should be lower case and can contain numerical values and
-underscore characters ([a-z0-9_]).
+underscore characters (a-z0-9``_``).
 
 Generic format of an MSD data block
 -----------------------------------
 
 Each section starts with a block label, begining with ``@`` as the first character at the start of
 the line, followed by the block's name which must be lower case and can contain numerical values and
-the underscore character ([a-z0-9_]). The format of the block data will depend on the nature of the
+the underscore characters (a-z0-9``_``). The format of the block data will depend on the nature of the
 data tag.
 
 The data type and number of entries in the section are then specified, along with (if required) the
@@ -433,7 +436,7 @@ Default mass of the given atom in atomic mass units (!)
 Value is only present for homonuclear files, and is the average isotopic mass of the element.
 
 ``@atomic_number``
-~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~
 
 Atomic number of the atom
 
